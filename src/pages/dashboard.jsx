@@ -1,43 +1,91 @@
+import { useState, useEffect } from "react";
+import KpiCard from "../components/KPICard";
+
+import {
+  getDashboardData,
+  getSearchAnalytics,
+  getUploadAnalytics,
+} from "../services/dashboardApi";
+
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+
 function Dashboard() {
+  const [stats, setStats] = useState({});
+  const [searchData, setSearchData] = useState([]);
+  const [uploadData, setUploadData] = useState([]);
+  
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const loadDashboard = async () => {
+    try {
+      const dashboardStats = await getDashboardData();
+      const searchAnalytics = await getSearchAnalytics();
+      const uploadAnalytics = await getUploadAnalytics();
+      // console.log(dashboardStats);
+      setStats(dashboardStats);
+      // console.log(stats);
+      
+      setSearchData(searchAnalytics)
+
+      setUploadData(uploadAnalytics);
+      console.log(uploadAnalytics)
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div>
+      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+      {/* KPI CARD*/}
 
-      <h1 className="text-3xl font-bold mb-6">
-        Dashboard
-      </h1>
+      <div className="grid grid-cols-4 gap-5 mb-8">
+        <KpiCard title="Documents" value={stats.total_documents || 0} />
 
-      <div className="grid grid-cols-4 gap-5">
+        <KpiCard title="Users" value={stats.total_user || 0} />
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3>Total Documents</h3>
-          <p className="text-3xl font-bold">
-            128
-          </p>
-        </div>
+        <KpiCard title="Queries" value={stats.total_queries || 0} />
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3>Total Users</h3>
-          <p className="text-3xl font-bold">
-            35
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3>Total Searches</h3>
-          <p className="text-3xl font-bold">
-            4520
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h3>Queries Today</h3>
-          <p className="text-3xl font-bold">
-            245
-          </p>
-        </div>
-
+        <KpiCard title="AI Chats" value={stats.total_ai_chat || 0} />
       </div>
-
+      {/* Charts */}
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white p-5 rounded-xl shadow">
+          <h2 className="font-bold mb-4">Search Analytics</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={searchData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="count" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="bg-white p-5 rounded-xl shadow">
+          <h2 className="font-bold mb-4">Document Upload</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={uploadData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }
