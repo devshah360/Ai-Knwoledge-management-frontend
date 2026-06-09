@@ -13,17 +13,10 @@ const TypingCursor = () => (
   </span>
 );
 
-export default function Chat() {
-  const [question, setQuestion] =
-    useState("");
-
-  const [messages, setMessages] =
-    useState([]);
-
-  const [
-    isStreaming,
-    setIsStreaming
-  ] = useState(false);
+function Chat() {
+  const [question, setQuestion] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const sendMessage = async () => {
     if (!question.trim()) return;
@@ -33,17 +26,12 @@ export default function Chat() {
     const userMessage = {
       type: "user",
       content: userQuestion,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-
-    setMessages((prev) => [
-      ...prev,
-      userMessage
-    ]);
 
     setQuestion("");
 
-    let aiResponse = "";
+    let responseText = "";
 
     setMessages((prev) => [
       ...prev,
@@ -51,38 +39,29 @@ export default function Chat() {
       {
         type: "ai",
         content: "",
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     ]);
 
     setIsStreaming(true);
 
     try {
-      await streamChat(
-        userQuestion,
-        (chunk) => {
-          aiResponse += chunk;
+      await streamChat(userQuestion, (chunk) => {
+        responseText += chunk;
 
-          setMessages((prev) => {
-            const updated = [
-              ...prev
-            ];
+        setMessages((prev) => {
+          const updated = [...prev];
 
-            updated[
-              updated.length - 1
-            ] = {
-              ...updated[
-                updated.length - 1
-              ],
-              content: aiResponse
-            };
+          updated[updated.length - 1] = {
+            ...updated[updated.length - 1],
+            content: responseText,
+          };
 
-            return updated;
-          });
-        }
-      );
+          return updated;
+        });
+      });
     } catch (error) {
-      console.error(error);
+      console.error("Chat error:", error);
     } finally {
       setIsStreaming(false);
     }
@@ -91,36 +70,30 @@ export default function Chat() {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto space-y-4">
-        {messages.map(
-          (message, index) => (
-            <div
-              key={index}
-              className={`
-                p-3
-                rounded-lg
-                ${
-                  message.type ===
-                  "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100"
-                }
-              `}
-            >
-              <ReactMarkdown>
-                {message.content}
-              </ReactMarkdown>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`
+              p-3
+              rounded-lg
+              ${
+                message.type === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100"
+              }
+            `}
+          >
+            <ReactMarkdown>
+              {message.content}
+            </ReactMarkdown>
 
-              {message.type ===
-                "ai" &&
-                isStreaming &&
-                index ===
-                  messages.length -
-                    1 && (
-                  <TypingCursor />
-                )}
-            </div>
-          )
-        )}
+            {message.type === "ai" &&
+              isStreaming &&
+              index === messages.length - 1 && (
+                <TypingCursor />
+              )}
+          </div>
+        ))}
       </div>
 
       <div className="flex gap-2 mt-4">
@@ -128,9 +101,7 @@ export default function Chat() {
           type="text"
           value={question}
           onChange={(e) =>
-            setQuestion(
-              e.target.value
-            )
+            setQuestion(e.target.value)
           }
           className="
             flex-1
@@ -140,6 +111,14 @@ export default function Chat() {
             py-2
           "
           placeholder="Ask a question..."
+          onKeyDown={(e) => {
+            if (
+              e.key === "Enter" &&
+              !isStreaming
+            ) {
+              sendMessage();
+            }
+          }}
         />
 
         <button
@@ -151,12 +130,16 @@ export default function Chat() {
             bg-blue-600
             text-white
             rounded-lg
+            disabled:bg-gray-400
           "
         >
-          Send
+          {isStreaming
+            ? "Thinking..."
+            : "Send"}
         </button>
       </div>
     </div>
   );
 }
 
+export default Chat;

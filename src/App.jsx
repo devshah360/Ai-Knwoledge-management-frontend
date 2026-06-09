@@ -35,7 +35,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+  path="/documents"
+  element={
+    <ProtectedRoute>
+      <Document />
+    </ProtectedRoute>
+  }
+/>
           <Route
             path="/chat"
             element={

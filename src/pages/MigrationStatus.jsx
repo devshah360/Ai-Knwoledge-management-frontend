@@ -4,17 +4,19 @@ import api from "../services/api";
 function MigrationStatus() {
   const [status, setStatus] = useState("");
 
-  const checkStatus = async () => {
-    try {
-      const response = await api.get("/status/task123");
-
-      setStatus(response.data.status);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const response = await api.get(
+          "/documents/status/task123"
+        );
+
+        setStatus(response.data.status);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     checkStatus();
 
     const interval = setInterval(() => {
@@ -26,9 +28,13 @@ function MigrationStatus() {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow">
-      <h2 className="font-bold">Migration Status</h2>
+      <h2 className="font-bold">
+        Migration Status
+      </h2>
 
-      <p className="mt-3">{status}</p>
+      <p className="mt-3">
+        {status || "Checking..."}
+      </p>
     </div>
   );
 }

@@ -1,84 +1,51 @@
-import {
-  useState,
-  useEffect
-} from "react";
-
+import { useState, useEffect } from "react";
 import {
   getHistory,
   deleteChat
 } from "../services/historyApi";
 
-import HistoryCard
-from "../components/HistoryCard";
+import HistoryCard from "../components/HistoryCard";
 
 function History() {
-
-  const [history, setHistory] =
-    useState([]);
-
-  const [search, setSearch] =
-    useState("");
-
-  const [page, setPage] =
-    useState(1);
+  const [history, setHistory] = useState([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const data = await getHistory(page);
+        setHistory(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     loadHistory();
-
   }, [page]);
 
-  const loadHistory = async () => {
-
+  const handleDelete = async (id) => {
     try {
+      await deleteChat(id);
 
-      const data =
-        await getHistory(page);
-
+      const data = await getHistory(page);
       setHistory(data);
-
     } catch (error) {
-
       console.error(error);
-
     }
   };
 
-  const handleDelete =
-    async (id) => {
-
-      try {
-
-        await deleteChat(id);
-
-        loadHistory();
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
-    };
-
-  const filteredHistory =
-    history.filter((chat) =>
-      chat.title
-        .toLowerCase()
-        .includes(
-          search.toLowerCase()
-        )
-    );
+  const filteredHistory = history.filter((chat) =>
+    (chat.title || "")
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
-
     <div>
-
       <h1 className="text-3xl font-bold mb-6">
         Chat History
       </h1>
-
-      {/* Search */}
 
       <input
         type="text"
@@ -96,32 +63,21 @@ function History() {
         "
       />
 
-      {/* History List */}
-
-      {filteredHistory.map(
-        (chat) => (
-
-          <HistoryCard
-            key={chat.id}
-            chat={chat}
-            onOpen={(id) =>
-              console.log(id)
-            }
-            onDelete={
-              handleDelete
-            }
-          />
-
-        )
-      )}
-
-      {/* Pagination */}
+      {filteredHistory.map((chat) => (
+        <HistoryCard
+          key={chat.id}
+          chat={chat}
+          onOpen={(id) =>
+            console.log(id)
+          }
+          onDelete={handleDelete}
+        />
+      ))}
 
       <div className="flex gap-3 mt-5">
-
         <button
           onClick={() =>
-            setPage(page - 1)
+            setPage((prev) => prev - 1)
           }
           disabled={page === 1}
           className="
@@ -136,7 +92,7 @@ function History() {
 
         <button
           onClick={() =>
-            setPage(page + 1)
+            setPage((prev) => prev + 1)
           }
           className="
             bg-blue-600
@@ -148,11 +104,8 @@ function History() {
         >
           Next
         </button>
-
       </div>
-
     </div>
-
   );
 }
 

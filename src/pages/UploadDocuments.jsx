@@ -1,50 +1,45 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import api from "../services/api";
 
 function UploadDocuments() {
-
   const [documents, setDocuments] = useState([]);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const fetchDocuments = async () => {
-
-    try {
-
-      const response = await api.get("/documents");
-
-      setDocuments(response.data);
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
-  };
 
   useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await api.get("/documents");
+        setDocuments(response.data);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load documents");
+      }
+    };
 
     fetchDocuments();
-
   }, []);
 
+  const refreshDocuments = async () => {
+    try {
+      const response = await api.get("/documents");
+      setDocuments(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleUpload = async () => {
-
     if (!file) {
-
-      setMessage("Please select a file");
+      toast.error("Please select a file");
       return;
-
     }
 
     const formData = new FormData();
-
     formData.append("file", file);
 
     try {
-
       setLoading(true);
 
       const response = await api.post(
@@ -57,39 +52,28 @@ function UploadDocuments() {
         }
       );
 
-      setMessage("File uploaded successfully");
-
       console.log(response.data);
 
-      // Refresh document list after upload
-      fetchDocuments();
+      toast.success("File uploaded successfully");
 
-      // Clear selected file
+      await refreshDocuments();
+
       setFile(null);
-
     } catch (error) {
-
       console.error(error);
-
-      setMessage("Upload failed");
-
+      toast.error("Upload failed");
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   return (
     <div>
-
       <h1 className="text-3xl font-bold mb-8">
         Upload Documents
       </h1>
 
       <div className="bg-white rounded-xl shadow p-8">
-
         <div
           className="
             border-2
@@ -100,7 +84,6 @@ function UploadDocuments() {
             text-center
           "
         >
-
           <p className="mb-4">
             Drag and Drop Files Here
           </p>
@@ -111,23 +94,16 @@ function UploadDocuments() {
               setFile(e.target.files[0])
             }
           />
-
         </div>
 
         {file && (
-
           <div className="mt-5">
-
-            <p>
-              Selected File:
-            </p>
+            <p>Selected File:</p>
 
             <p className="font-semibold">
               {file.name}
             </p>
-
           </div>
-
         )}
 
         <button
@@ -147,24 +123,13 @@ function UploadDocuments() {
             : "Upload Document"}
         </button>
 
-        {message && (
-
-          <p className="mt-4">
-            {message}
-          </p>
-
-        )}
-
         <div className="mt-8">
-
           <h2 className="font-bold text-xl mb-4">
             Uploaded Files
           </h2>
 
           {documents.length > 0 ? (
-
             documents.map((doc) => (
-
               <div
                 key={doc.id}
                 className="
@@ -176,21 +141,14 @@ function UploadDocuments() {
               >
                 {doc.filename}
               </div>
-
             ))
-
           ) : (
-
             <p className="text-gray-500">
               No documents uploaded yet.
             </p>
-
           )}
-
         </div>
-
       </div>
-
     </div>
   );
 }

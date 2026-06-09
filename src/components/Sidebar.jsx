@@ -71,7 +71,10 @@ function Sidebar() {
             <LayoutDashboard size={20} />
             {!collapsed && <span>Dashboard</span>}
           </NavLink>
-
+            <FileText />
+            <NavLink to="/document">
+              Documents
+            </NavLink>
           <NavLink
             to="/upload"
             className={({ isActive }) =>
