@@ -1,63 +1,152 @@
-function HistoryCard({
-  chat,
-  onOpen,
-  onDelete
-}) {
+import {
+  useState,
+  useEffect
+} from "react";
+
+import {
+  getHistory,
+  deleteChat
+} from "../services/historyApi";
+
+import HistoryCard
+from "../components/HistoryCard";
+
+function History() {
+
+  const [history, setHistory] =
+    useState([]);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [page, setPage] =
+    useState(1);
+
+  useEffect(() => {
+
+    loadHistory();
+
+  }, [page]);
+
+  const loadHistory = async () => {
+
+    try {
+
+      const data =
+        await getHistory(page);
+
+      setHistory(data);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+  };
+
+  const handleDelete =
+    async (id) => {
+
+      try {
+
+        await deleteChat(id);
+
+        loadHistory();
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+  const filteredHistory =
+    history.filter((chat) =>
+      chat.title
+        .toLowerCase()
+        .includes(
+          search.toLowerCase()
+        )
+    );
 
   return (
 
-    <div
-      className="
-        bg-white
-        shadow
-        rounded-xl
-        p-5
-        mb-4
-      "
-    >
+    <div>
 
-      <h3 className="font-bold">
+      <h1 className="text-3xl font-bold mb-6">
+        Chat History
+      </h1>
 
-        {chat.title}
+      {/* Search */}
 
-      </h3>
+      <input
+        type="text"
+        placeholder="Search chats..."
+        value={search}
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
+        className="
+          w-full
+          border
+          rounded-lg
+          p-3
+          mb-6
+        "
+      />
 
-      <p className="text-gray-500 mt-2">
+      {/* History List */}
 
-        {chat.created_at}
+      {filteredHistory.map(
+        (chat) => (
 
-      </p>
+          <HistoryCard
+            key={chat.id}
+            chat={chat}
+            onOpen={(id) =>
+              console.log(id)
+            }
+            onDelete={
+              handleDelete
+            }
+          />
 
-      <div className="mt-4 flex gap-3">
+        )
+      )}
+
+      {/* Pagination */}
+
+      <div className="flex gap-3 mt-5">
 
         <button
           onClick={() =>
-            onOpen(chat.id)
+            setPage(page - 1)
+          }
+          disabled={page === 1}
+          className="
+            bg-gray-300
+            px-4
+            py-2
+            rounded
+          "
+        >
+          Previous
+        </button>
+
+        <button
+          onClick={() =>
+            setPage(page + 1)
           }
           className="
             bg-blue-600
             text-white
             px-4
             py-2
-            rounded-lg
+            rounded
           "
         >
-          Open
-        </button>
-
-        <button
-          onClick={() =>
-            onDelete(chat.id)
-          }
-          className="
-            bg-red-500
-            text-white
-            px-4
-            py-2
-            rounded-lg
-          "
-        >
-          Delete
+          Next
         </button>
 
       </div>
@@ -67,4 +156,4 @@ function HistoryCard({
   );
 }
 
-export default HistoryCard;
+export default History;

@@ -7,8 +7,10 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+import { useSidebar } from "../context/SidebarContext";
 
 function Sidebar() {
+  const { collapsed } = useSidebar();
 
   const documents = [
     "company_policy.pdf",
@@ -17,29 +19,49 @@ function Sidebar() {
   ];
 
   return (
-    <div className="w-72 h-screen bg-slate-950 text-white flex flex-col">
+    <div
+      className={`
+        bg-slate-950
+        text-white
+        h-screen
+        transition-all
+        duration-300
+        ${collapsed ? "w-20" : "w-72"}
+      `}
+    >
+      {/* Header */}
+      <div
+        className="
+          flex
+          justify-between
+          items-center
+          p-4
+        "
+      >
+        {!collapsed && (
+          <h1 className="font-bold text-xl">
+            AI Assistant
+          </h1>
+        )}
+      </div>
 
       {/* Logo */}
-
       <div className="p-6 border-b border-slate-800">
-
-        <h1 className="text-2xl font-bold text-blue-400">
-          AI Knowledge Chatbot
-        </h1>
-
+        {!collapsed && (
+          <h1 className="text-2xl font-bold text-blue-400">
+            AI Knowledge Chatbot
+          </h1>
+        )}
       </div>
 
       {/* Menu */}
-
       <div className="flex-1 p-4">
-
         <div className="space-y-2">
 
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-lg transition
-              ${
+              `flex items-center gap-3 p-3 rounded-lg transition ${
                 isActive
                   ? "bg-blue-600"
                   : "hover:bg-slate-800"
@@ -47,14 +69,13 @@ function Sidebar() {
             }
           >
             <LayoutDashboard size={20} />
-            Dashboard
+            {!collapsed && <span>Dashboard</span>}
           </NavLink>
 
           <NavLink
             to="/upload"
             className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-lg transition
-              ${
+              `flex items-center gap-3 p-3 rounded-lg transition ${
                 isActive
                   ? "bg-blue-600"
                   : "hover:bg-slate-800"
@@ -62,14 +83,13 @@ function Sidebar() {
             }
           >
             <Upload size={20} />
-            Upload Documents
+            {!collapsed && <span>Upload Documents</span>}
           </NavLink>
 
           <NavLink
             to="/chat"
             className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-lg transition
-              ${
+              `flex items-center gap-3 p-3 rounded-lg transition ${
                 isActive
                   ? "bg-blue-600"
                   : "hover:bg-slate-800"
@@ -77,14 +97,13 @@ function Sidebar() {
             }
           >
             <MessageSquare size={20} />
-            Chat
+            {!collapsed && <span>Chat</span>}
           </NavLink>
 
           <NavLink
             to="/history"
             className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-lg transition
-              ${
+              `flex items-center gap-3 p-3 rounded-lg transition ${
                 isActive
                   ? "bg-blue-600"
                   : "hover:bg-slate-800"
@@ -92,14 +111,13 @@ function Sidebar() {
             }
           >
             <History size={20} />
-            History
+            {!collapsed && <span>History</span>}
           </NavLink>
 
           <NavLink
             to="/settings"
             className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-lg transition
-              ${
+              `flex items-center gap-3 p-3 rounded-lg transition ${
                 isActive
                   ? "bg-blue-600"
                   : "hover:bg-slate-800"
@@ -107,36 +125,31 @@ function Sidebar() {
             }
           >
             <Settings size={20} />
-            Settings
+            {!collapsed && <span>Settings</span>}
           </NavLink>
 
         </div>
 
         {/* Uploaded Documents */}
+        {!collapsed && (
+          <div className="mt-10">
+            <h2 className="font-semibold mb-4">
+              Uploaded Documents
+            </h2>
 
-        <div className="mt-10">
-
-          <h2 className="font-semibold mb-4">
-            Uploaded Documents
-          </h2>
-
-          <div className="space-y-3">
-
-            {documents.map((doc, index) => (
-              <div
-                key={index}
-                className="bg-slate-900 p-3 rounded-lg text-sm"
-              >
-                {doc}
-              </div>
-            ))}
-
+            <div className="space-y-3">
+              {documents.map((doc, index) => (
+                <div
+                  key={index}
+                  className="bg-slate-900 p-3 rounded-lg text-sm"
+                >
+                  {doc}
+                </div>
+              ))}
+            </div>
           </div>
-
-        </div>
-
+        )}
       </div>
-
     </div>
   );
 }

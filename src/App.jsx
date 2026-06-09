@@ -7,11 +7,16 @@ import History from "./pages/History";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Header from "./components/Header";
 
 function App() {
   return (
     <BrowserRouter>
       <MainLayout>
+        <div className="flex-1 p-5">
+      <Header />
+      {/* {{children} } */}
+    </div>
         <Routes>
           <Route
             path="/"
@@ -33,15 +38,6 @@ function App() {
 
           <Route
             path="/chat"
-            element={
-              <ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/chat/:chatId"
             element={
               <ProtectedRoute>
                 <Chat />

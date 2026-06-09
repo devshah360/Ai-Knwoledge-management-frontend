@@ -1,173 +1,162 @@
-import { useState, useEffect, useRef } from "react";
-import api from "../services/api";
-import ChatBubble from "../components/ChatBubble";
-import PDFViewer from "../components/PDFViewer";
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { streamChat } from "../services/chatApi";
 
-function Chat() {
-  const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [sources, setSources] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedPdf, setSelectedPdf] = useState(null);
-  const [selectedPage, setSelectedPage] = useState(1);
+const TypingCursor = () => (
+  <span
+    className="
+      animate-pulse
+      ml-1
+    "
+  >
+    |
+  </span>
+);
 
-  const bottomRef = useRef(null);
+export default function Chat() {
+  const [question, setQuestion] =
+    useState("");
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [messages]);
+  const [messages, setMessages] =
+    useState([]);
+
+  const [
+    isStreaming,
+    setIsStreaming
+  ] = useState(false);
 
   const sendMessage = async () => {
     if (!question.trim()) return;
 
+    const userQuestion = question;
+
     const userMessage = {
       type: "user",
-      content: question,
-      timestamp: new Date(),
+      content: userQuestion,
+      timestamp: new Date()
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [
+      ...prev,
+      userMessage
+    ]);
+
+    setQuestion("");
+
+    let aiResponse = "";
+
+    setMessages((prev) => [
+      ...prev,
+      userMessage,
+      {
+        type: "ai",
+        content: "",
+        timestamp: new Date()
+      }
+    ]);
+
+    setIsStreaming(true);
 
     try {
-      setLoading(true);
+      await streamChat(
+        userQuestion,
+        (chunk) => {
+          aiResponse += chunk;
 
-      const response = await api.post("/chat", {
-        question,
-      });
+          setMessages((prev) => {
+            const updated = [
+              ...prev
+            ];
 
-      console.log("API Response:", response.data);
+            updated[
+              updated.length - 1
+            ] = {
+              ...updated[
+                updated.length - 1
+              ],
+              content: aiResponse
+            };
 
-      const aiMessage = {
-        type: "ai",
-        content: response.data.answer,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-
-      setSources(response.data.sources || []);
-      setQuestion("");
+            return updated;
+          });
+        }
+      );
     } catch (error) {
-      console.error("Chat Error:", error);
+      console.error(error);
     } finally {
-      setLoading(false);
+      setIsStreaming(false);
     }
   };
 
   return (
-    <div className="flex gap-5 h-[85vh]">
-      {/* Chat Section */}
-      <div className="flex-1 bg-white rounded-xl shadow flex flex-col">
-        <div className="p-5 border-b">
-          <h2 className="text-xl font-bold">
-            Chat with your documents
-          </h2>
-        </div>
-
-        <div className="flex justify-end p-3">
-          <button
-            onClick={() => {
-              setMessages([]);
-              setSources([]);
-            }}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg"
-          >
-            Clear Chat
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-5">
-          {messages.map((message, index) => (
-            <ChatBubble
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto space-y-4">
+        {messages.map(
+          (message, index) => (
+            <div
               key={index}
-              message={message}
-            />
-          ))}
-
-          {loading && (
-            <div className="bg-gray-100 p-4 rounded-xl w-fit">
-              Generating response...
-            </div>
-          )}
-
-          <div ref={bottomRef} />
-        </div>
-
-        {/* Input */}
-        <div className="p-4 border-t bg-white">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  sendMessage();
+              className={`
+                p-3
+                rounded-lg
+                ${
+                  message.type ===
+                  "user"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100"
                 }
-              }}
-              placeholder="Ask anything..."
-              className="flex-1 border rounded-xl px-4 py-3"
-            />
-
-            <button
-              onClick={sendMessage}
-              className="bg-blue-600 text-white px-8 rounded-xl"
+              `}
             >
-              Send
-            </button>
-          </div>
-        </div>
+              <ReactMarkdown>
+                {message.content}
+              </ReactMarkdown>
+
+              {message.type ===
+                "ai" &&
+                isStreaming &&
+                index ===
+                  messages.length -
+                    1 && (
+                  <TypingCursor />
+                )}
+            </div>
+          )
+        )}
       </div>
 
-      {/* Right Side Panel */}
-      <div className="w-80 flex flex-col gap-4">
-        {/* PDF Preview */}
-        <div className="bg-white rounded-xl shadow p-5">
-          <h2 className="text-xl font-bold mb-4">
-            Document Preview
-          </h2>
+      <div className="flex gap-2 mt-4">
+        <input
+          type="text"
+          value={question}
+          onChange={(e) =>
+            setQuestion(
+              e.target.value
+            )
+          }
+          className="
+            flex-1
+            border
+            rounded-lg
+            px-4
+            py-2
+          "
+          placeholder="Ask a question..."
+        />
 
-          <PDFViewer
-            pdfUrl={selectedPdf}
-            pageNumber={selectedPage}
-          />
-        </div>
-
-        {/* Sources */}
-        <div className="bg-white rounded-xl shadow p-5">
-          <h3 className="font-bold text-lg mb-5">
-            Sources Used
-          </h3>
-
-          {sources.length === 0 ? (
-            <p>No sources yet</p>
-          ) : (
-            sources.map((source, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setSelectedPdf(source.pdf_url);
-                  setSelectedPage(source.page);
-                }}
-                className="bg-slate-50 border rounded-xl p-4 mb-3 cursor-pointer hover:bg-slate-100"
-              >
-                <p className="font-semibold">
-                  {source.document}
-                </p>
-
-                <p>Page {source.page}</p>
-
-                <p>Score: {source.score}</p>
-              </div>
-            ))
-          )}
-        </div>
+        <button
+          onClick={sendMessage}
+          disabled={isStreaming}
+          className="
+            px-4
+            py-2
+            bg-blue-600
+            text-white
+            rounded-lg
+          "
+        >
+          Send
+        </button>
       </div>
     </div>
   );
 }
 
-export default Chat;
