@@ -8,15 +8,15 @@ function Settings() {
       "light"
     );
 
-  const changeTheme = () => {
-
+  const changeTheme = (e) => {
+    console.log("Hello");
     const newTheme =
       theme === "light"
         ? "dark"
         : "light";
 
     setTheme(newTheme);
-
+    console.log("just");
     localStorage.setItem(
       "theme",
       newTheme
@@ -25,8 +25,9 @@ function Settings() {
     document.documentElement.classList.toggle(
       "dark"
     );
+     console.log("byr");
   };
-
+ 
   return (
 
     <div>
@@ -49,6 +50,10 @@ function Settings() {
         >
           Toggle Theme
         </button>
+
+        {/* <button onClick={console.log("bye")}>
+            bye
+        </button> */}
 
       </div>
 

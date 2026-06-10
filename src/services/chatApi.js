@@ -1,37 +1,46 @@
-//import api from "./api";
+// src/services/chatApi.js
 
 export const streamChat = async (
   question,
-  onChunk
+  onResponse
 ) => {
-  const response = await fetch(
-    "http://localhost:8000/chat/stream",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${
-          localStorage.getItem("token")
-        }`
-      },
-      body: JSON.stringify({
-        question
-      })
+  try {
+    const response = await fetch(
+      `http://localhost:8000/chat?question=${encodeURIComponent(question)}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${
+            localStorage.getItem("token")
+          }`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error! status: ${response.status}`
+      );
     }
-  );
 
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
+    const data = await response.json();
 
-  while (true) {
-    const { done, value } =
-      await reader.read();
+    console.log(
+      "Chat API Response:",
+      data
+    );
 
-    if (done) break;
+    onResponse(data.answer);
 
-    const chunk =
-      decoder.decode(value);
+  } catch (error) {
+    console.error(
+      "Chat API Error:",
+      error
+    );
 
-    onChunk(chunk);
+    onResponse(
+      "Sorry, an error occurred while processing your request."
+    );
   }
 };

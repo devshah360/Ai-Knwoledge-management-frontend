@@ -3,7 +3,8 @@ import {
   Upload,
   MessageSquare,
   History,
-  Settings
+  Settings,
+  SearchIcon,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -12,11 +13,7 @@ import { useSidebar } from "../context/SidebarContext";
 function Sidebar() {
   const { collapsed } = useSidebar();
 
-  const documents = [
-    "company_policy.pdf",
-    "employee_handbook.pdf",
-    "faq.pdf"
-  ];
+  const documents = ["company_policy.pdf", "employee_handbook.pdf", "faq.pdf"];
 
   return (
     <div
@@ -38,11 +35,7 @@ function Sidebar() {
           p-4
         "
       >
-        {!collapsed && (
-          <h1 className="font-bold text-xl">
-            AI Assistant
-          </h1>
-        )}
+        {!collapsed && <h1 className="font-bold text-xl">AI Assistant</h1>}
       </div>
 
       {/* Logo */}
@@ -57,31 +50,24 @@ function Sidebar() {
       {/* Menu */}
       <div className="flex-1 p-4">
         <div className="space-y-2">
-
           <NavLink
             to="/"
             className={({ isActive }) =>
               `flex items-center gap-3 p-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                isActive ? "bg-blue-600" : "hover:bg-slate-800"
               }`
             }
           >
             <LayoutDashboard size={20} />
             {!collapsed && <span>Dashboard</span>}
           </NavLink>
-            <FileText />
-            <NavLink to="/document">
-              Documents
-            </NavLink>
+          {/* <FileText /> */}
+          <NavLink to="/document">Documents</NavLink>
           <NavLink
             to="/upload"
             className={({ isActive }) =>
               `flex items-center gap-3 p-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                isActive ? "bg-blue-600" : "hover:bg-slate-800"
               }`
             }
           >
@@ -93,9 +79,7 @@ function Sidebar() {
             to="/chat"
             className={({ isActive }) =>
               `flex items-center gap-3 p-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                isActive ? "bg-blue-600" : "hover:bg-slate-800"
               }`
             }
           >
@@ -107,9 +91,7 @@ function Sidebar() {
             to="/history"
             className={({ isActive }) =>
               `flex items-center gap-3 p-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                isActive ? "bg-blue-600" : "hover:bg-slate-800"
               }`
             }
           >
@@ -121,24 +103,50 @@ function Sidebar() {
             to="/settings"
             className={({ isActive }) =>
               `flex items-center gap-3 p-3 rounded-lg transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
+                isActive ? "bg-blue-600" : "hover:bg-slate-800"
               }`
             }
           >
             <Settings size={20} />
             {!collapsed && <span>Settings</span>}
           </NavLink>
-
         </div>
+        <div className="space-y-2">
+          <NavLink
+            to="/search"
+            className="
+      flex
+      items-center
+      gap-3
+      px-4
+      py-2
+      rounded-lg
+      hover:bg-gray-100
+    "
+          >
+            <SearchIcon className="w-5 h-5" />
+            <span>Search</span>
+          </NavLink>
 
+          <select
+            className="
+      w-full
+      border
+      rounded-lg
+      px-3
+      py-2
+      text-sm
+      
+    "
+          >
+            <option>HR</option>
+            <option>Finance</option>
+          </select>
+        </div>
         {/* Uploaded Documents */}
         {!collapsed && (
           <div className="mt-10">
-            <h2 className="font-semibold mb-4">
-              Uploaded Documents
-            </h2>
+            <h2 className="font-semibold mb-4">Uploaded Documents</h2>
 
             <div className="space-y-3">
               {documents.map((doc, index) => (
