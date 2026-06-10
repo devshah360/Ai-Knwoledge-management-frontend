@@ -8,16 +8,27 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
+import { Search } from "lucide-react";
+import Document from "react-pdf/src/Document.js";
 
 function App() {
   return (
     <BrowserRouter>
       <MainLayout>
         <div className="flex-1 p-5">
-      <Header />
-      {/* {{children} } */}
-    </div>
-        <Routes>
+          <Header />
+          {/* {{children} } */}
+        </div>
+        <div
+          className="
+    min-h-screen
+    bg-white
+    text-black
+    dark:bg-gray-900
+    dark:text-white
+  "
+        >
+           <Routes>
           <Route
             path="/"
             element={
@@ -35,14 +46,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-  path="/documents"
-  element={
-    <ProtectedRoute>
-      <Document />
-    </ProtectedRoute>
-  }
-/>
+          
           <Route
             path="/chat"
             element={
@@ -70,8 +74,20 @@ function App() {
             }
           />
 
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/chat/history/:chatId " element={<Chat />} />
+
           <Route path="/login" element={<Login />} />
         </Routes>
+        </div>
+       
       </MainLayout>
     </BrowserRouter>
   );
