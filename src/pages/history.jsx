@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react";
 import {
   getHistory,
-  getChatById,
   deleteChat
 } from "../services/historyApi";
 
 import HistoryCard from "../components/HistoryCard";
 import { useNavigate } from "react-router-dom";
 
-
 function History() {
   const [history, setHistory] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  
-  const navigate=useNavigate();
-  
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -28,15 +26,7 @@ function History() {
 
     loadHistory();
   }, [page]);
-  const handleOpen = async (chatId) => {
-  try {
-    const chat =
-      await getChatById(chatId);
-    console.log(chat);
-  } catch (error) {
-    console.error(error);
-  }
-};
+
   const handleDelete = async (id) => {
     try {
       await deleteChat(id);
@@ -75,16 +65,14 @@ function History() {
           mb-6
         "
       />
-  
+
       {filteredHistory.map((chat) => (
         <HistoryCard
           key={chat.id}
           chat={chat}
-          onOpen={(id) =>{
-            
-            navigate(`/chat/history/${id}`)
-          }
-          }
+          onOpen={(id) => {
+            navigate(`/chat/history/${id}`);
+          }}
           onDelete={handleDelete}
         />
       ))}

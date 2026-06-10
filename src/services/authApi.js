@@ -1,26 +1,27 @@
 import api from "./api";
 
-export const loginUser = async (
-  email,
-  password
-) => {
+export const loginUser = async (username, password) => {
+  const formData = new URLSearchParams();
+
+  formData.append("username", username);
+  formData.append("password", password);
 
   const response = await api.post(
-    "/login",
+    "/api/v1/auth/login",
+    formData,
     {
-      email,
-      password
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded",
+      },
     }
   );
 
   return response.data;
 };
 
-export const getCurrentUser =
-  async () => {
+export const getCurrentUser = async () => {
+  const response = await api.get("/me");
 
-    const response =
-      await api.get("/users/me");
-
-    return response.data;
+  return response.data;
 };

@@ -8,7 +8,7 @@ function Settings() {
       "light"
     );
 
-  const changeTheme = (e) => {
+  const changeTheme = () => {
     console.log("Hello");
     const newTheme =
       theme === "light"
