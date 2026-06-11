@@ -82,28 +82,28 @@ function SystemMonitoring() {
         <StatusCard
           title="Elasticsearch"
           status={
-            health.elasticsearch
+            health?.elasticsearch ?? "Loading"
           }
         />
 
         <StatusCard
           title="Redis"
           status={
-            health.redis
+            health?.redis ?? "Loading"
           }
         />
 
         <StatusCard
           title="MongoDB"
           status={
-            health.mongodb
+            health?.mongodb ?? "Loading"
           }
         />
 
         <StatusCard
           title="Celery"
           status={
-            health.celery
+            health?.celery ?? "Loading"
           }
         />
       </div>

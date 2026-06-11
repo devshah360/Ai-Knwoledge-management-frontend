@@ -68,13 +68,13 @@ function Admin() {
         !role
       ) return;
 
-      await createUser({
+      const obj={
+        "username":name,
+        "email": email,
+        "password":role
+      }
 
-        name,
-        email,
-        role
-
-      });
+      await createUser(obj);
 
       loadUsers();
     };

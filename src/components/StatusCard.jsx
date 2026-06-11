@@ -3,7 +3,7 @@ function StatusCard({
   status
 }) {
   const healthy =
-    status === "healthy";
+    status === "running";
 
   return (
     <div

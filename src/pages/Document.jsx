@@ -63,11 +63,13 @@ function Documents() {
 
   const handleReindex = async (id) => {
     try {
-      await reindexDocument(id);
+      const result = await reindexDocument(id);
 
-      alert("Re-index started");
+      alert(`${result.message}\nChunks : ${result.chunks}`);
+      await refreshDocuments();
     } catch (error) {
       console.error(error);
+      alert("Re-index Failed");
     }
   };
 

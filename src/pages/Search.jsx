@@ -69,9 +69,7 @@ function Search() {
 
       {loading && <p>Searching...</p>}
 
-      {!loading && results.length === 0 && query && (
-        <p>No results found.</p>
-      )}
+      {!loading && results.length === 0 && query && <p>No Results Found</p>}
 
       {results.map((result) => (
         <div
@@ -95,16 +93,13 @@ function Search() {
 
           <p
             className="
-              mt-2
-              text-gray-600
+            mt-2
+            text-gray-600
             "
-             dangerouslySetInnerHTML={{
-                __html: result.snippet
+            dangerouslySetInnerHTML={{
+              __html: result.snippet,
             }}
-          >
-            {result.snippet}
-          </p>
-
+          />
           <div
             className="
               mt-3

@@ -45,7 +45,7 @@ function Sidebar() {
       `}
     >
       {/* Brand */}
-      <div className="px-6 py-6 border-b border-slate-800">
+      <div className="px-6 py-6 border-b border-slate-800" >
         {!collapsed && (
           <>
             <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">

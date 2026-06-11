@@ -42,7 +42,7 @@ function UserTable({
           >
 
             <td className="p-3">
-              {user.name}
+              {user.username}
             </td>
 
             <td className="p-3">

@@ -1,13 +1,13 @@
 import api from "./api";
 
 export const getUsers = async () => {
-  const response = await api.get("/users");
+  const response = await api.get("/users/get");
   return response.data;
 };
 
 export const createUser = async (userData) => {
   const response = await api.post(
-    "/users",
+    "/users/create",
     userData
   );
 

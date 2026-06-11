@@ -9,7 +9,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
-import { Search } from "lucide-react";
+import Search from "./pages/Search";
 import RoleGuard from "./components/RoleGuard";
 import Admin from "./pages/Admin";
 import ActivityLogs from "./pages/ActivityLogs";
@@ -102,9 +102,9 @@ function App() {
               path="/admin"
               element={
                 <ProtectedRoute>
-                  <RoleGuard role="admin">
+                  {/* <RoleGuard role="admin">
+                  </RoleGuard> */}
                     <Admin />
-                  </RoleGuard>
                 </ProtectedRoute>
               }
             />

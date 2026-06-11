@@ -8,7 +8,7 @@ function ActivityLogs() {
     const loadLogs = async () => {
       try {
         const response = await api.get("/admin/logs");
-        setLogs(response.data);
+        setLogs(response.data.logs);
       } catch (error) {
         console.error("Failed to load logs", error);
       }

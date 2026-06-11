@@ -4,6 +4,7 @@ export const getSystemHealth = async () => {
   const response = await api.get(
     "/monitoring/health"
   );
+  console.log(response.data);
 
   return response.data;
 };
@@ -12,7 +13,6 @@ export const getMetrics = async () => {
   const response = await api.get(
     "/monitoring/metrics"
   );
-
   return response.data;
 };
 
