@@ -1,11 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { useParams } from "react-router-dom";
+
 import { streamChat } from "../services/chatApi";
+import { getChatById } from "../services/historyApi";
 
 function Chat() {
+  const { id } = useParams();
+
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadHistoryChat = async () => {
+      if (!id) return;
+
+      try {
+        const chat = await getChatById(id);
+
+        setMessages([
+          {
+            type: "user",
+            content: chat.question,
+            timestamp: chat.created_at,
+          },
+          {
+            type: "ai",
+            content: chat.answer,
+            timestamp: chat.created_at,
+          },
+        ]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadHistoryChat();
+  }, [id]);
 
   const sendMessage = async () => {
     if (!question.trim() || isLoading) return;
@@ -25,31 +57,24 @@ function Chat() {
     setIsLoading(true);
 
     try {
-      await streamChat(
-        userQuestion,
-        (answer) => {
-          setMessages((prev) => [
-            ...prev,
-            {
-              type: "ai",
-              content: answer,
-              timestamp: new Date(),
-            },
-          ]);
-        }
-      );
+      await streamChat(userQuestion, (answer) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "ai",
+            content: answer,
+            timestamp: new Date(),
+          },
+        ]);
+      });
     } catch (error) {
-      console.error(
-        "Chat error:",
-        error
-      );
+      console.error(error);
 
       setMessages((prev) => [
         ...prev,
         {
           type: "ai",
-          content:
-            "Sorry, something went wrong.",
+          content: "Sorry, something went wrong.",
           timestamp: new Date(),
         },
       ]);
@@ -61,27 +86,25 @@ function Chat() {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto space-y-4 p-4">
-        {messages.map(
-          (message, index) => (
-            <div
-              key={index}
-              className={`
-                p-3
-                rounded-lg
-                max-w-[80%]
-                ${
-                  message.type === "user"
-                    ? "bg-blue-500 text-white ml-auto"
-                    : "bg-gray-100 text-black"
-                }
-              `}
-            >
-              <ReactMarkdown>
-                {message.content}
-              </ReactMarkdown>
-            </div>
-          )
-        )}
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`
+              p-3
+              rounded-lg
+              max-w-[80%]
+              ${
+                message.type === "user"
+                  ? "bg-blue-500 text-white ml-auto"
+                  : "bg-gray-100 text-black"
+              }
+            `}
+          >
+            <ReactMarkdown>
+              {message.content}
+            </ReactMarkdown>
+          </div>
+        ))}
 
         {isLoading && (
           <div
@@ -89,7 +112,7 @@ function Chat() {
               p-3
               rounded-lg
               bg-gray-100
-              text-black
+              text-white
               max-w-[80%]
             "
           >
@@ -103,9 +126,7 @@ function Chat() {
           type="text"
           value={question}
           onChange={(e) =>
-            setQuestion(
-              e.target.value
-            )
+            setQuestion(e.target.value)
           }
           placeholder="Ask a question..."
           className="
@@ -116,10 +137,7 @@ function Chat() {
             py-2
           "
           onKeyDown={(e) => {
-            if (
-              e.key === "Enter" &&
-              !isLoading
-            ) {
+            if (e.key === "Enter" && !isLoading) {
               sendMessage();
             }
           }}
@@ -137,9 +155,7 @@ function Chat() {
             disabled:bg-gray-400
           "
         >
-          {isLoading
-            ? "Thinking..."
-            : "Send"}
+          {isLoading ? "Thinking..." : "Send"}
         </button>
       </div>
     </div>

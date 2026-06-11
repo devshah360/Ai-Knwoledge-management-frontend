@@ -1,43 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Settings() {
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") || "light"
+  );
 
-  const [theme, setTheme] =
-    useState(
-      localStorage.getItem("theme") ||
-      "light"
-    );
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
 
   const changeTheme = () => {
-    console.log("Hello");
     const newTheme =
       theme === "light"
         ? "dark"
         : "light";
 
     setTheme(newTheme);
-    console.log("just");
+
     localStorage.setItem(
       "theme",
       newTheme
     );
-
-    document.documentElement.classList.toggle(
-      "dark"
-    );
-     console.log("byr");
   };
- 
+
   return (
-
     <div>
-
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-8 dark:text-white">
         Settings
       </h1>
 
-      <div className="bg-white p-6 rounded-xl shadow">
-
+      <div
+        className="
+          bg-white
+          dark:bg-slate-800
+          p-6
+          rounded-xl
+          shadow
+        "
+      >
         <button
           onClick={changeTheme}
           className="
@@ -48,15 +52,11 @@ function Settings() {
             rounded-lg
           "
         >
-          Toggle Theme
+          {theme === "light"
+            ? "Enable Dark Mode"
+            : "Enable Light Mode"}
         </button>
-
-        {/* <button onClick={console.log("bye")}>
-            bye
-        </button> */}
-
       </div>
-
     </div>
   );
 }

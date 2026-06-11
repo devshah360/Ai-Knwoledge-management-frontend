@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState } from "react";
 
 import UserTable from "../components/UserTable";
 
@@ -9,109 +6,119 @@ import {
   getUsers,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 } from "../services/userApi";
 
 function Admin() {
-
-  const [users,
-    setUsers] =
-    useState([]);
-
-  const loadUsers =
-    async () => {
-
-      const data =
-        await getUsers();
-
-      setUsers(data);
-    };
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-
-    const fetchUsers =
-      async () => {
-
-        const data =
-          await getUsers();
-
+    const fetchUsers = async () => {
+      try {
+        const data = await getUsers();
         setUsers(data);
-      };
+      } catch (error) {
+        console.error(error);
+        alert("Failed to load users");
+      }
+    };
 
     fetchUsers();
-
   }, []);
 
-  const handleDelete =
-    async (id) => {
+  const loadUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to refresh users");
+    }
+  };
 
+  const handleDelete = async (id) => {
+    try {
       await deleteUser(id);
+      await loadUsers();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete user");
+    }
+  };
 
-      loadUsers();
-    };
+  const handleCreate = async () => {
+    try {
+      const username = prompt("Enter Username");
 
-  const handleCreate =
-    async () => {
+      if (!username) return;
 
-      const name =
-        prompt("Name");
+      const email = prompt("Enter Email");
 
-      const email =
-        prompt("Email");
+      if (!email) return;
 
-      const role =
-        prompt("Role");
+      const password = prompt(
+        "Enter Password\n\nPassword must contain:\n• 8+ characters\n• One uppercase letter\n• One lowercase letter\n• One number"
+      );
 
-      if (
-        !name ||
-        !email ||
-        !role
-      ) return;
+      if (!password) return;
 
-      const obj={
-        "username":name,
-        "email": email,
-        "password":role
-      }
+      const userData = {
+        username,
+        email,
+        password,
+      };
 
-      await createUser(obj);
+      await createUser(userData);
 
-      loadUsers();
-    };
+      alert("User created successfully");
 
-  const handleEdit =
-    async (user) => {
+      await loadUsers();
+    } catch (error) {
+      console.error(error);
 
-      const role =
-        prompt(
-          "New Role",
-          user.role
-        );
+      alert(
+        error?.response?.data?.detail ||
+          "Failed to create user"
+      );
+    }
+  };
+
+  const handleEdit = async (user) => {
+    try {
+      const role = prompt(
+        "Enter New Role",
+        user.role
+      );
 
       if (!role) return;
 
-      await updateUser(
-        user.id,
-        {
-          role
-        }
-      );
+      await updateUser(user.id, {
+        role,
+      });
 
-      loadUsers();
-    };
+      alert("Role updated successfully");
+
+      await loadUsers();
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error?.response?.data?.detail ||
+          "Failed to update user"
+      );
+    }
+  };
 
   return (
-
     <div>
-
       <div
         className="
           flex
           justify-between
+          items-center
           mb-6
         "
       >
-
         <h1
           className="
             text-3xl
@@ -122,11 +129,10 @@ function Admin() {
         </h1>
 
         <button
-          onClick={
-            handleCreate
-          }
+          onClick={handleCreate}
           className="
             bg-blue-600
+            hover:bg-blue-700
             text-white
             px-4
             py-2
@@ -135,17 +141,13 @@ function Admin() {
         >
           Create User
         </button>
-
       </div>
 
       <UserTable
         users={users}
         onEdit={handleEdit}
-        onDelete={
-          handleDelete
-        }
+        onDelete={handleDelete}
       />
-
     </div>
   );
 }

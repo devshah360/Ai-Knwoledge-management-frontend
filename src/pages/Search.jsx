@@ -5,20 +5,29 @@ function Search() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const performSearch = async () => {
     if (!query.trim()) return;
 
     try {
       setLoading(true);
+      setHasSearched(true);
 
       const data = await searchDocuments(query);
 
       setResults(data);
     } catch (error) {
       console.error("Search failed:", error);
+      setResults([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      performSearch();
     }
   };
 
@@ -45,6 +54,7 @@ function Search() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Search documents..."
           className="
             flex-1
@@ -67,50 +77,67 @@ function Search() {
         </button>
       </div>
 
-      {loading && <p>Searching...</p>}
-
-      {!loading && results.length === 0 && query && <p>No Results Found</p>}
-
-      {results.map((result) => (
-        <div
-          key={result.id}
-          className="
-            bg-white
-            shadow
-            rounded-xl
-            p-5
-            mb-4
-          "
-        >
-          <h2
-            className="
-              text-lg
-              font-bold
-            "
-          >
-            {result.title}
-          </h2>
-
-          <p
-            className="
-            mt-2
-            text-gray-600
-            "
-            dangerouslySetInnerHTML={{
-              __html: result.snippet,
-            }}
-          />
-          <div
-            className="
-              mt-3
-              text-sm
-              text-blue-600
-            "
-          >
-            Score: {result.score}
-          </div>
+      {!hasSearched && (
+        <div className="text-center text-gray-500 mt-20">
+          Enter a search term and press Search
         </div>
-      ))}
+      )}
+
+      {loading && (
+        <div className="text-center">
+          Searching...
+        </div>
+      )}
+
+      {!loading &&
+        hasSearched &&
+        results.length === 0 && (
+          <p>No Results Found</p>
+        )}
+
+      {!loading &&
+        hasSearched &&
+        results.map((result) => (
+          <div
+            key={result.id}
+            className="
+              bg-white
+              shadow
+              rounded-xl
+              p-5
+              mb-4
+            "
+          >
+            <h2
+              className="
+                text-lg
+                font-bold
+              "
+            >
+              {result.title}
+            </h2>
+
+            <p
+              className="
+                mt-2
+                text-gray-600
+              "
+              dangerouslySetInnerHTML={{
+                __html: result.snippet,
+              }}
+            />
+
+            <div
+              className="
+                mt-3
+                text-sm
+                text-blue-600
+              "
+            >
+              Score: {result.score}
+            </div>
+          </div>
+        ))}
     </div>
   );
 }

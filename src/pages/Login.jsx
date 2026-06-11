@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { loginUser }
-from "../services/authApi";
+import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../services/authApi";
 
 function Login() {
-
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
 
   const [password, setPassword] =
     useState("");
@@ -15,131 +11,189 @@ function Login() {
   const [error, setError] =
     useState("");
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const handleLogin =
-    async (e) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-      e.preventDefault();
+    try {
+      const data = await loginUser(
+        email,
+        password
+      );
 
-      try {
-
-        const data =
-          await loginUser(
-            email,
-            password
-          );
-
-        localStorage.setItem(
-          "token",
-          data.access_token
-        );
-
-        localStorage.setItem(
-          "role",
-          data.role
-        );
-
-        navigate("/");
-
-      } catch {
-
+      if (data.role === "admin") {
         setError(
-          "Invalid credentials"
+          "Please use Admin Login"
         );
-
+        return;
       }
-    };
+
+      localStorage.setItem(
+        "token",
+        data.access_token
+      );
+
+      localStorage.setItem(
+        "role",
+        data.role
+      );
+
+      navigate("/");
+
+    } catch {
+      setError(
+        "Invalid credentials"
+      );
+    }
+  };
 
   return (
-
     <div
       className="
         min-h-screen
+        bg-[#171717]
+        text-white
         flex
         items-center
         justify-center
-        bg-slate-100
+        px-4
       "
     >
+      <div className="w-full max-w-md">
+        <div className="text-center mb-10">
+          <h1
+            className="
+              text-5xl
+              font-semibold
+              mb-4
+            "
+          >
+            AI Knowledge
+          </h1>
 
-      <form
-        onSubmit={handleLogin}
-        className="
-          bg-white
-          p-8
-          rounded-xl
-          shadow
-          w-96
-        "
-      >
-
-        <h1
-          className="
-            text-2xl
-            font-bold
-            mb-6
-          "
-        >
-          Login
-        </h1>
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          className="
-            w-full
-            border
-            p-3
-            rounded-lg
-            mb-4
-          "
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          className="
-            w-full
-            border
-            p-3
-            rounded-lg
-            mb-4
-          "
-        />
-
-        {error && (
-
-          <p className="text-red-500 mb-3">
-            {error}
+          <p
+            className="
+              text-gray-400
+              text-lg
+            "
+          >
+            Log in to continue
           </p>
+        </div>
 
-        )}
+        <form
+          onSubmit={handleLogin}
+          className="space-y-4"
+        >
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) =>
+              setEmail(
+                e.target.value
+              )
+            }
+            className="
+              w-full
+              h-14
+              bg-transparent
+              border
+              border-gray-700
+              rounded-full
+              px-6
+              outline-none
+              focus:border-green-500
+            "
+            required
+          />
 
-        <button
-          type="submit"
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+            className="
+              w-full
+              h-14
+              bg-transparent
+              border
+              border-gray-700
+              rounded-full
+              px-6
+              outline-none
+              focus:border-green-500
+            "
+            required
+          />
+
+          {error && (
+            <div
+              className="
+                bg-red-500/10
+                border
+                border-red-500
+                text-red-400
+                rounded-xl
+                p-3
+              "
+            >
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="
+              w-full
+              h-14
+              bg-white
+              text-black
+              rounded-full
+              font-medium
+              hover:bg-gray-200
+              transition
+            "
+          >
+            Continue
+          </button>
+        </form>
+
+        <div className="mt-8">
+          <Link
+            to="/admin-login"
+            className="
+              block
+              w-full
+              text-center
+              border
+              border-gray-700
+              rounded-full
+              py-4
+              hover:bg-gray-800
+              transition
+            "
+          >
+            Admin Login
+          </Link>
+        </div>
+
+        <div
           className="
-            w-full
-            bg-blue-600
-            text-white
-            p-3
-            rounded-lg
+            mt-10
+            text-center
+            text-sm
+            text-gray-500
           "
         >
-          Login
-        </button>
-
-      </form>
-
+          AI Knowledge Management System
+        </div>
+      </div>
     </div>
   );
 }

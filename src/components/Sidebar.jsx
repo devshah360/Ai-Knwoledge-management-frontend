@@ -18,12 +18,6 @@ import { useSidebar } from "../context/SidebarContext";
 function Sidebar() {
   const { collapsed } = useSidebar();
 
-  const documents = [
-    "company_policy.pdf",
-    "employee_handbook.pdf",
-    "faq.pdf",
-  ];
-
   const navClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
      ${
@@ -35,17 +29,15 @@ function Sidebar() {
   return (
     <aside
       className={`
-        bg-slate-950
-        border-r border-slate-800
-        text-white
-        h-screen
-        flex flex-col
+        fixed left-0 top-0 z-50
+        bg-slate-950 border-r border-slate-800
+        text-white h-screen flex flex-col
         transition-all duration-300
         ${collapsed ? "w-20" : "w-72"}
       `}
     >
       {/* Brand */}
-      <div className="px-6 py-6 border-b border-slate-800" >
+      <div className="px-6 py-6 border-b border-slate-800">
         {!collapsed && (
           <>
             <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">
@@ -103,7 +95,7 @@ function Sidebar() {
           </div>
         </div>
 
-        {/* ADMIN */}
+        {/* MANAGEMENT */}
         <div className="mt-8">
           {!collapsed && (
             <p className="text-xs uppercase text-slate-500 mb-3 px-2">
@@ -147,65 +139,6 @@ function Sidebar() {
             </NavLink>
           </div>
         </div>
-
-        {/* DEPARTMENT */}
-        {!collapsed && (
-          <div className="mt-8">
-            <label className="text-xs uppercase text-slate-500 block mb-3">
-              Department
-            </label>
-
-            <select
-              className="
-                w-full
-                bg-slate-900
-                border
-                border-slate-700
-                rounded-xl
-                px-4
-                py-3
-                text-sm
-                text-white
-                focus:outline-none
-                focus:ring-2
-                focus:ring-blue-500
-              "
-            >
-              <option>HR</option>
-              <option>Finance</option>
-            </select>
-          </div>
-        )}
-
-        {/* DOCUMENTS */}
-        {!collapsed && (
-          <div className="mt-8">
-            <h3 className="text-xs uppercase text-slate-500 mb-4">
-              Uploaded Documents
-            </h3>
-
-            <div className="space-y-3">
-              {documents.map((doc, index) => (
-                <div
-                  key={index}
-                  className="
-                    bg-slate-900
-                    border border-slate-800
-                    rounded-xl
-                    p-3
-                    text-sm
-                    text-slate-300
-                    hover:bg-slate-800
-                    transition
-                    cursor-pointer
-                  "
-                >
-                  {doc}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </aside>
   );

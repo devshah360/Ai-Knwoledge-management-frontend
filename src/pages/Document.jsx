@@ -65,12 +65,30 @@ function Documents() {
     try {
       const result = await reindexDocument(id);
 
-      alert(`${result.message}\nChunks : ${result.chunks}`);
+      alert(
+        `${result.message}\nChunks : ${result.chunks}`
+      );
+
       await refreshDocuments();
     } catch (error) {
       console.error(error);
       alert("Re-index Failed");
     }
+  };
+
+  const handleOpen = (document) => {
+    if (!document.filepath) {
+      alert("File path not found");
+      return;
+    }
+
+    const filename =
+      document.filepath.split("/").pop();
+
+    const fileUrl =
+      `http://localhost:8000/files/${filename}`;
+
+    window.open(fileUrl, "_blank");
   };
 
   const filteredDocuments = documents.filter((doc) =>
@@ -81,13 +99,7 @@ function Documents() {
 
   return (
     <div>
-      <h1
-        className="
-          text-3xl
-          font-bold
-          mb-6
-        "
-      >
+      <h1 className="text-3xl font-bold mb-6">
         Documents
       </h1>
 
@@ -98,13 +110,7 @@ function Documents() {
         onChange={(e) =>
           setSearch(e.target.value)
         }
-        className="
-          w-full
-          border
-          rounded-lg
-          p-3
-          mb-6
-        "
+        className="w-full border rounded-lg p-3 mb-6"
       />
 
       {filteredDocuments.map((document) => (
@@ -114,6 +120,7 @@ function Documents() {
           onDelete={handleDelete}
           onRename={handleRename}
           onReindex={handleReindex}
+          onOpen={handleOpen}
         />
       ))}
     </div>

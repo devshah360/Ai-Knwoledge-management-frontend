@@ -2,7 +2,8 @@ function DocumentCard({
   document,
   onDelete,
   onRename,
-  onReindex
+  onReindex,
+  onOpen,
 }) {
   return (
     <div className="bg-white rounded-xl shadow p-5 mb-4">
@@ -13,10 +14,16 @@ function DocumentCard({
       <div className="mt-3">
         <p>Type: {document.filetype}</p>
         <p>Owner: {document.owner_id}</p>
-        <p>Path: {document.filepath}</p>
       </div>
 
-      <div className="flex gap-3 mt-4">
+      <div className="flex gap-3 mt-4 flex-wrap">
+        <button
+          onClick={() => onOpen(document)}
+          className="bg-green-600 text-white px-3 py-2 rounded"
+        >
+          Open PDF
+        </button>
+
         <button
           onClick={() => onRename(document)}
           className="bg-yellow-500 text-white px-3 py-2 rounded"
