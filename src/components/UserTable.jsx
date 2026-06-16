@@ -22,7 +22,7 @@ function UserTable({ users, onEdit, onDelete }) {
 
             <td className="p-3">{user.role}</td>
 
-            <td className="p-3 flex gap-8 ">
+            <td className="p-3 flex gap-8 justify-center ">
               <button
                 onClick={() => onEdit(user)}
                 className="bg-yellow-500 text-white px-3 py-1 rounded"
