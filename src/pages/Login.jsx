@@ -22,13 +22,6 @@ function Login() {
         password
       );
 
-      if (data.role === "admin") {
-        setError(
-          "Please use Admin Login"
-        );
-        return;
-      }
-
       localStorage.setItem(
         "token",
         data.access_token
@@ -39,8 +32,12 @@ function Login() {
         data.role
       );
 
+      if (data.role === "admin"){
+        navigate("/admin")
+      }
+      else{
       navigate("/");
-
+    }
     } catch {
       setError(
         "Invalid credentials"
@@ -163,25 +160,6 @@ function Login() {
             Continue
           </button>
         </form>
-
-        <div className="mt-8">
-          <Link
-            to="/admin-login"
-            className="
-              block
-              w-full
-              text-center
-              border
-              border-gray-700
-              rounded-full
-              py-4
-              hover:bg-gray-800
-              transition
-            "
-          >
-            Admin Login
-          </Link>
-        </div>
 
         <div
           className="

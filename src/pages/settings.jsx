@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Settings() {
+   const navigate = useNavigate();
+
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") || "light"
   );
@@ -27,6 +30,13 @@ function Settings() {
     );
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    // localStorage.clear();
+    navigate("/login");
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8 dark:text-white">
@@ -35,13 +45,10 @@ function Settings() {
 
       <div
         className="
-          bg-white
-          dark:bg-slate-800
-          p-6
-          rounded-xl
-          shadow
+         flex gap-3 mt-4 flex-wrap
         "
       >
+
         <button
           onClick={changeTheme}
           className="
@@ -56,6 +63,15 @@ function Settings() {
             ? "Enable Dark Mode"
             : "Enable Light Mode"}
         </button>
+
+        <button
+              onClick={handleLogout}
+              className="
+                 bg-red-500 text-white px-3 py-2 rounded 
+                      "
+            >
+              Logout
+          </button>
       </div>
     </div>
   );

@@ -27,15 +27,38 @@ function Dashboard() {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const dashboardStats = await getDashboardData();
-        const searchAnalytics = await getSearchAnalytics();
-        const uploadAnalytics = await getUploadAnalytics();
+        const dashboardStats =
+          await getDashboardData();
+
+        const searchAnalytics =
+          await getSearchAnalytics();
+
+        const uploadAnalytics =
+          await getUploadAnalytics();
 
         setStats(dashboardStats);
         setSearchData(searchAnalytics);
         setUploadData(uploadAnalytics);
+
+        console.log(
+          "Dashboard Stats:",
+          dashboardStats
+        );
+
+        console.log(
+          "Search Analytics:",
+          searchAnalytics
+        );
+
+        console.log(
+          "Upload Analytics:",
+          uploadAnalytics
+        );
       } catch (error) {
-        console.error("Dashboard load error:", error);
+        console.error(
+          "Dashboard load error:",
+          error
+        );
       }
     };
 
@@ -82,12 +105,14 @@ function Dashboard() {
           >
             <LineChart data={searchData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
               <Line
                 type="monotone"
                 dataKey="count"
+                stroke="#2563eb"
+                dot={{ r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -95,7 +120,7 @@ function Dashboard() {
 
         <div className="bg-white p-5 rounded-xl shadow">
           <h2 className="font-bold mb-4">
-            Document Upload
+            Document Upload Analytics
           </h2>
 
           <ResponsiveContainer
@@ -104,10 +129,12 @@ function Dashboard() {
           >
             <BarChart data={uploadData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" />
+              <Bar
+                dataKey="count"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -116,4 +143,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard; 
+export default Dashboard;

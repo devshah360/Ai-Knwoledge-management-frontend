@@ -25,7 +25,7 @@ function Sidebar() {
          ? "bg-blue-600 text-white shadow-lg"
          : "text-slate-300 hover:bg-slate-800 hover:text-white"
      }`;
-
+  
   return (
     <aside
       className={`

@@ -116,7 +116,7 @@ function Chat() {
               max-w-[80%]
             "
           >
-            Thinking...
+            Searching...
           </div>
         )}
       </div>

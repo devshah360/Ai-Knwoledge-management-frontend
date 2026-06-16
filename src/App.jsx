@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import MainLayout from "./layouts/MainLayout";
-
 import Dashboard from "./pages/Dashboard";
 import UploadDocuments from "./pages/UploadDocuments";
 import Documents from "./pages/Document";
@@ -9,8 +7,6 @@ import Chat from "./pages/Chat";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import AdminLogin from "./pages/AdminLogin";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 import Header from "./components/Header";
 import Search from "./pages/Search";
@@ -20,6 +16,7 @@ import ActivityLogs from "./pages/ActivityLogs";
 import Workflow from "./pages/Workflow";
 import SystemMonitoring from "./pages/SystemMonitoring";
 import AuditDashboard from "./pages/AuditDashboard";
+
 
 function DashboardLayout() {
   return (
@@ -165,9 +162,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-
-        <Route path="/admin-login" element={<AdminLogin />} />
-
         <Route path="/*" element={<DashboardLayout />} />
       </Routes>
     </BrowserRouter>
