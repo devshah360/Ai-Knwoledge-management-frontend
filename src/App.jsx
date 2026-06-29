@@ -1,38 +1,52 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import MainLayout from "./layouts/MainLayout";
+
 import Dashboard from "./pages/Dashboard";
 import UploadDocuments from "./pages/UploadDocuments";
 import Documents from "./pages/Document";
 import Chat from "./pages/Chat";
 import History from "./pages/History";
 import Settings from "./pages/Settings";
-import Login from "./pages/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Header from "./components/Header";
 import Search from "./pages/Search";
-import RoleGuard from "./components/RoleGuard";
+
+import Login from "./pages/Login";
+
 import Admin from "./pages/Admin";
 import ActivityLogs from "./pages/ActivityLogs";
 import Workflow from "./pages/Workflow";
 import SystemMonitoring from "./pages/SystemMonitoring";
 import AuditDashboard from "./pages/AuditDashboard";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import RoleGuard from "./components/RoleGuard";
+import Header from "./components/Header";
 
 function DashboardLayout() {
   return (
     <MainLayout>
-      <div className="flex-1 p-5">
+
+      <div className="mb-6">
         <Header />
       </div>
 
       <div
         className="
-    bg-white
-    text-black
-    min-h-screen
-  "
+          min-h-screen
+
+          bg-slate-50
+          text-slate-900
+
+          dark:bg-slate-950
+          dark:text-slate-100
+
+          transition-colors
+          duration-300
+        "
       >
+
         <Routes>
+
           <Route
             path="/"
             element={
@@ -88,15 +102,6 @@ function DashboardLayout() {
           />
 
           <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
             path="/search"
             element={
               <ProtectedRoute>
@@ -106,12 +111,10 @@ function DashboardLayout() {
           />
 
           <Route
-            path="/admin"
+            path="/settings"
             element={
               <ProtectedRoute>
-                <RoleGuard role="admin">
-                  <Admin />
-                </RoleGuard>
+                <Settings />
               </ProtectedRoute>
             }
           />
@@ -144,6 +147,17 @@ function DashboardLayout() {
           />
 
           <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <RoleGuard role="admin">
+                  <Admin />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/audit"
             element={
               <ProtectedRoute>
@@ -151,20 +165,37 @@ function DashboardLayout() {
               </ProtectedRoute>
             }
           />
+
         </Routes>
+
       </div>
+
     </MainLayout>
   );
 }
 
 function App() {
+
   return (
+
     <BrowserRouter>
+
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/*" element={<DashboardLayout />} />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/*"
+          element={<DashboardLayout />}
+        />
+
       </Routes>
+
     </BrowserRouter>
+
   );
 }
 

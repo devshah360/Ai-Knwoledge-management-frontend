@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState } from "react";
 
 import UserTable from "../components/UserTable";
 
@@ -9,143 +6,149 @@ import {
   getUsers,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
 } from "../services/userApi";
 
 function Admin() {
-
-  const [users,
-    setUsers] =
-    useState([]);
-
-  const loadUsers =
-    async () => {
-
-      const data =
-        await getUsers();
-
-      setUsers(data);
-    };
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-
-    const fetchUsers =
-      async () => {
-
-        const data =
-          await getUsers();
-
+    getUsers()
+      .then((data) => {
         setUsers(data);
-      };
-
-    fetchUsers();
-
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
-  const handleDelete =
-    async (id) => {
+  const refreshUsers = async () => {
+    try {
+      const data = await getUsers();
 
+      setUsers(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
       await deleteUser(id);
 
-      loadUsers();
-    };
+      await refreshUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const handleCreate =
-    async () => {
+  const handleCreate = async () => {
+    const name = prompt("Enter Username");
 
-      const name =
-        prompt("Name");
+    const email = prompt("Enter Email");
 
-      const email =
-        prompt("Email");
+    const password = prompt("Enter Password");
 
-      const role =
-        prompt("Password");
+    if (!name || !email || !password) return;
 
-      if (
-        !name ||
-        !email ||
-        !password
-      ) return;
+    try {
+      await createUser({
+        username: name,
+        email: email,
+        password: password,
+      });
 
-      const obj={
-        "username":name,
-        "email": email,
-        "password":password
-      }
+      await refreshUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-      await createUser(obj);
+  const handleEdit = async (user) => {
+    const role = prompt("New Role", user.role);
 
-      loadUsers();
-    };
+    if (!role) return;
 
-  const handleEdit =
-    async (user) => {
+    try {
+      await updateUser(user.id, {
+        role,
+      });
 
-      const role =
-        prompt(
-          "New Role",
-          user.role
-        );
-
-      if (!role) return;
-
-      await updateUser(
-        user.id,
-        {
-          role
-        }
-      );
-
-      loadUsers();
-    };
+      await refreshUsers();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-
     <div>
-
       <div
         className="
           flex
           justify-between
-          mb-6
+          items-center
+          flex-wrap
+          gap-4
+          mb-8
         "
       >
+        <div>
+          <h1
+            className="
+              text-3xl
+              font-bold
+              text-slate-900
+              dark:text-white
+            "
+          >
+            Admin Panel
+          </h1>
 
-        <h1
-          className="
-            text-3xl
-            font-bold
-          "
-        >
-          Admin Panel
-        </h1>
+          <p
+            className="
+              mt-2
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
+            Manage users and permissions.
+          </p>
+        </div>
 
         <button
-          onClick={
-            handleCreate
-          }
+          onClick={handleCreate}
           className="
+            px-6
+            py-3
+            rounded-xl
             bg-blue-600
+            hover:bg-blue-700
             text-white
-            px-4
-            py-2
-            rounded
+            transition
           "
         >
           Create User
         </button>
-
       </div>
 
-      <UserTable
-        users={users}
-        onEdit={handleEdit}
-        onDelete={
-          handleDelete
-        }
-      />
-
+      <div
+        className="
+          bg-white
+          dark:bg-slate-900
+          border
+          border-slate-200
+          dark:border-slate-700
+          rounded-2xl
+          p-6
+          shadow-sm
+        "
+      >
+        <UserTable
+          users={users}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </div>
     </div>
   );
 }

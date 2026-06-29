@@ -1,38 +1,48 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   getHistory,
-  deleteChat
+  deleteChat,
 } from "../services/historyApi";
 
 import HistoryCard from "../components/HistoryCard";
-import { useNavigate } from "react-router-dom";
 
 function History() {
   const [history, setHistory] = useState([]);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadHistory = async () => {
+    let mounted = true;
+
+    const fetchHistory = async () => {
       try {
-        const data = await getHistory(page);
-        setHistory(data);
+        const data = await getHistory();
+
+        if (mounted) {
+          setHistory(data);
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
-    loadHistory();
-  }, [page]);
+    fetchHistory();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleDelete = async (id) => {
     try {
       await deleteChat(id);
 
-      const data = await getHistory(page);
-      setHistory(data);
+      setHistory((prev) =>
+        prev.filter((chat) => chat.id !== id)
+      );
     } catch (error) {
       console.error(error);
     }
@@ -46,7 +56,16 @@ function History() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">
+      <h1
+        className="
+          text-3xl
+          font-bold
+          mb-8
+
+          text-slate-900
+          dark:text-white
+        "
+      >
         Chat History
       </h1>
 
@@ -59,55 +78,65 @@ function History() {
         }
         className="
           w-full
+
+          px-5
+          py-3
+
+          mb-8
+
+          rounded-2xl
+
           border
-          rounded-lg
-          p-3
-          mb-6
+
+          border-slate-300
+
+          bg-white
+
+          text-slate-900
+
+          placeholder:text-slate-400
+
+          outline-none
+
+          focus:ring-2
+          focus:ring-blue-500
+
+          dark:bg-slate-900
+          dark:text-white
+          dark:border-slate-700
+
+          transition-all
         "
       />
 
-      {filteredHistory.map((chat) => (
-        <HistoryCard
-          key={chat.id}
-          chat={chat}
-          onOpen={(id) => {
-            navigate(`/chat/history/${id}`);
-          }}
-          onDelete={handleDelete}
-        />
-      ))}
-
-      <div className="flex gap-3 mt-5">
-        <button
-          onClick={() =>
-            setPage((prev) => prev - 1)
-          }
-          disabled={page === 1}
+      {filteredHistory.length === 0 ? (
+        <div
           className="
-            bg-gray-300
-            px-4
-            py-2
-            rounded
+            text-center
+
+            mt-20
+
+            text-slate-500
+
+            dark:text-slate-400
           "
         >
-          Previous
-        </button>
-
-        <button
-          onClick={() =>
-            setPage((prev) => prev + 1)
-          }
-          className="
-            bg-blue-600
-            text-white
-            px-4
-            py-2
-            rounded
-          "
-        >
-          Next
-        </button>
-      </div>
+          No chat history found.
+        </div>
+      ) : (
+        <div className="space-y-5">
+          {filteredHistory.map((chat) => (
+            <HistoryCard
+              key={chat.id}
+              chat={chat}
+              onOpen={(id) =>
+                navigate(`/chat/history/${id}`)
+              }
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,69 +1,95 @@
 function HistoryCard({
   chat,
   onOpen,
-  onDelete
+  onDelete,
 }) {
-
   return (
-
     <div
       className="
         bg-white
-        shadow
-        rounded-xl
-        p-5
-        mb-4
+        dark:bg-slate-900
+
+        border
+        border-slate-200
+        dark:border-slate-700
+
+        rounded-2xl
+        shadow-sm
+
+        p-6
+        mb-5
+
+        hover:shadow-lg
+        transition-all
       "
     >
+      <h3
+        className="
+          text-lg
+          font-semibold
 
-      <h3 className="font-bold">
-
+          text-slate-900
+          dark:text-white
+        "
+      >
         {chat.title}
-
       </h3>
 
-      <p className="text-gray-500 mt-2">
+      <p
+        className="
+          mt-2
 
-        {chat.created_at}
+          text-sm
 
+          text-slate-500
+          dark:text-slate-400
+        "
+      >
+        {new Date(chat.created_at).toLocaleString()}
       </p>
 
-      <div className="mt-4 flex gap-3">
-
+      <div className="mt-5 flex gap-3">
         <button
-          onClick={() =>
-            onOpen(chat.id)
-          }
+          onClick={() => onOpen(chat.id)}
           className="
+            px-5
+            py-2.5
+
+            rounded-xl
+
             bg-blue-600
+            hover:bg-blue-700
+
             text-white
-            px-4
-            py-2
-            rounded-lg
+            font-medium
+
+            transition
           "
         >
           Open
         </button>
 
         <button
-          onClick={() =>
-            onDelete(chat.id)
-          }
+          onClick={() => onDelete(chat.id)}
           className="
-            bg-red-500
+            px-5
+            py-2.5
+
+            rounded-xl
+
+            bg-red-600
+            hover:bg-red-700
+
             text-white
-            px-4
-            py-2
-            rounded-lg
+            font-medium
+
+            transition
           "
         >
           Delete
         </button>
-
       </div>
-
     </div>
-
   );
 }
 

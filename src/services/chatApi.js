@@ -1,46 +1,52 @@
 // src/services/chatApi.js
-
 export const streamChat = async (
+
   question,
+
+  conversationId,
+
   onResponse
+
 ) => {
-  try {
-    const response = await fetch(
-      `http://localhost:8000/chat?question=${encodeURIComponent(question)}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${
-            localStorage.getItem("token")
-          }`
-        }
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error(
-        `HTTP error! status: ${response.status}`
-      );
-    }
+  let url =
 
-    const data = await response.json();
+  `http://localhost:8000/chat?question=${encodeURIComponent(question)}`;
 
-    console.log(
-      "Chat API Response:",
-      data
-    );
+  if(conversationId){
 
-    onResponse(data.answer);
+      url +=
 
-  } catch (error) {
-    console.error(
-      "Chat API Error:",
-      error
-    );
+      `&conversation_id=${conversationId}`;
 
-    onResponse(
-      "Sorry, an error occurred while processing your request."
-    );
   }
+
+  const response = await fetch(
+
+      url,
+
+      {
+
+        method:"POST",
+
+        headers:{
+
+          "Content-Type":"application/json",
+
+          "Authorization":
+
+          `Bearer ${localStorage.getItem("token")}`
+
+        }
+
+      }
+
+  );
+
+  const data = await response.json();
+
+  onResponse(data);
+
+  return data;
+
 };

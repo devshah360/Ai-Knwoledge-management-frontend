@@ -3,36 +3,53 @@ function KPICard({ title, value }) {
     <div
       className="
         bg-white
-        dark:bg-slate-800
+        dark:bg-slate-900
+
         border
         border-slate-200
         dark:border-slate-700
+
+        rounded-2xl
+
         p-6
-        rounded-xl
-        shadow
-        transition-colors
+
+        shadow-sm
+        hover:shadow-lg
+
+        transition-all
+        duration-300
       "
     >
-      <h3
-        className="
-          text-gray-500
-          dark:text-gray-400
-        "
-      >
-        {title}
-      </h3>
 
       <p
         className="
-          text-3xl
+          text-sm
+
+          text-slate-500
+          dark:text-slate-400
+
+          uppercase
+          tracking-wide
+        "
+      >
+        {title}
+      </p>
+
+      <h2
+        className="
+          text-4xl
+
           font-bold
-          mt-2
+
+          mt-3
+
           text-slate-900
           dark:text-white
         "
       >
         {value}
-      </p>
+      </h2>
+
     </div>
   );
 }

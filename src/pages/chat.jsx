@@ -9,8 +9,14 @@ function Chat() {
   const { id } = useParams();
 
   const [question, setQuestion] = useState("");
+
   const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [conversationId, setConversationId] =
+    useState(null);
+
+  const [isLoading, setIsLoading] =
+    useState(false);
 
   useEffect(() => {
     const loadHistoryChat = async () => {
@@ -19,18 +25,21 @@ function Chat() {
       try {
         const chat = await getChatById(id);
 
-        setMessages([
-          {
-            type: "user",
-            content: chat.question,
-            timestamp: chat.created_at,
-          },
-          {
-            type: "ai",
-            content: chat.answer,
-            timestamp: chat.created_at,
-          },
-        ]);
+        setConversationId(chat._id);
+
+        const formattedMessages =
+          chat.messages.map((msg) => ({
+            type:
+              msg.role === "assistant"
+                ? "ai"
+                : "user",
+
+            content: msg.content,
+
+            timestamp: msg.timestamp,
+          }));
+
+        setMessages(formattedMessages);
       } catch (error) {
         console.error(error);
       }
@@ -40,7 +49,8 @@ function Chat() {
   }, [id]);
 
   const sendMessage = async () => {
-    if (!question.trim() || isLoading) return;
+    if (!question.trim() || isLoading)
+      return;
 
     const userQuestion = question;
 
@@ -48,33 +58,55 @@ function Chat() {
       ...prev,
       {
         type: "user",
+
         content: userQuestion,
+
         timestamp: new Date(),
       },
     ]);
 
     setQuestion("");
+
     setIsLoading(true);
 
     try {
-      await streamChat(userQuestion, (answer) => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: "ai",
-            content: answer,
-            timestamp: new Date(),
-          },
-        ]);
-      });
+      const response = await streamChat(
+        userQuestion,
+
+        conversationId,
+
+        (data) => {
+          setMessages((prev) => [
+            ...prev,
+
+            {
+              type: "ai",
+
+              content: data.answer,
+
+              timestamp: new Date(),
+            },
+          ]);
+        }
+      );
+
+      if (!conversationId) {
+        setConversationId(
+          response.conversation_id
+        );
+      }
     } catch (error) {
       console.error(error);
 
       setMessages((prev) => [
         ...prev,
+
         {
           type: "ai",
-          content: "Sorry, something went wrong.",
+
+          content:
+            "Sorry, something went wrong.",
+
           timestamp: new Date(),
         },
       ]);
@@ -84,19 +116,99 @@ function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto space-y-4 p-4">
+    <div
+      className="
+      flex
+      flex-col
+
+      h-[78vh]
+
+      rounded-3xl
+
+      bg-white
+
+      dark:bg-slate-900
+
+      border
+
+      border-slate-200
+
+      dark:border-slate-700
+
+      shadow-lg
+
+      overflow-hidden
+    "
+    >
+      {/* Chat Area */}
+
+      <div
+        className="
+        flex-1
+
+        overflow-y-auto
+
+        p-6
+
+        space-y-5
+      "
+      >
+        {messages.length === 0 && (
+          <div
+            className="
+            text-center
+
+            mt-24
+
+            text-slate-500
+
+            dark:text-slate-400
+          "
+          >
+            Start a conversation with AI
+          </div>
+        )}
+
         {messages.map((message, index) => (
           <div
             key={index}
             className={`
-              p-3
-              rounded-lg
+              p-4
+
+              rounded-2xl
+
               max-w-[80%]
+
+              shadow-sm
+
               ${
                 message.type === "user"
-                  ? "bg-blue-500 text-white ml-auto"
-                  : "bg-gray-100 text-black"
+                  ? `
+                  ml-auto
+
+                  bg-gradient-to-r
+
+                  from-blue-600
+
+                  to-blue-500
+
+                  text-white
+                `
+                  : `
+                  bg-slate-100
+
+                  text-slate-800
+
+                  dark:bg-slate-800
+
+                  dark:text-white
+
+                  border
+
+                  border-slate-200
+
+                  dark:border-slate-700
+                `
               }
             `}
           >
@@ -109,35 +221,91 @@ function Chat() {
         {isLoading && (
           <div
             className="
-              p-3
-              rounded-lg
-              bg-gray-100
-              text-white
-              max-w-[80%]
-            "
+            p-4
+
+            rounded-2xl
+
+            max-w-[80%]
+
+            bg-slate-100
+
+            dark:bg-slate-800
+
+            dark:text-white
+
+            border
+
+            border-slate-200
+
+            dark:border-slate-700
+          "
           >
-            Searching...
+            Thinking...
           </div>
         )}
       </div>
 
-      <div className="flex gap-2 mt-4 p-4">
+      {/* Input Area */}
+
+      <div
+        className="
+        p-5
+
+        border-t
+
+        border-slate-200
+
+        dark:border-slate-700
+
+        flex
+
+        gap-3
+      "
+      >
         <input
           type="text"
           value={question}
           onChange={(e) =>
             setQuestion(e.target.value)
           }
-          placeholder="Ask a question..."
+          placeholder="Ask anything..."
+
           className="
-            flex-1
-            border
-            rounded-lg
-            px-4
-            py-2
-          "
+          flex-1
+
+          px-5
+
+          py-3
+
+          rounded-2xl
+
+          border
+
+          border-slate-300
+
+          bg-white
+
+          text-slate-900
+
+          outline-none
+
+          focus:ring-2
+
+          focus:ring-blue-500
+
+          dark:bg-slate-950
+
+          dark:text-white
+
+          dark:border-slate-700
+
+          transition-all
+        "
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !isLoading) {
+            if (
+              e.key === "Enter" &&
+              !isLoading
+            ) {
               sendMessage();
             }
           }}
@@ -147,15 +315,28 @@ function Chat() {
           onClick={sendMessage}
           disabled={isLoading}
           className="
-            px-4
-            py-2
-            bg-blue-600
-            text-white
-            rounded-lg
-            disabled:bg-gray-400
-          "
+          px-6
+
+          py-3
+
+          rounded-2xl
+
+          bg-blue-600
+
+          hover:bg-blue-700
+
+          text-white
+
+          font-medium
+
+          transition
+
+          disabled:bg-slate-500
+        "
         >
-          {isLoading ? "Thinking..." : "Send"}
+          {isLoading
+            ? "Thinking..."
+            : "Send"}
         </button>
       </div>
     </div>

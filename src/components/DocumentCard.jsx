@@ -6,45 +6,172 @@ function DocumentCard({
   onOpen,
 }) {
   return (
-    <div className="bg-white rounded-xl shadow p-5 mb-4">
-      <h2 className="text-lg font-bold">
+    <div
+      className="
+        bg-white
+        dark:bg-slate-900
+
+        border
+        border-slate-200
+        dark:border-slate-700
+
+        rounded-2xl
+
+        p-6
+
+        shadow-sm
+        hover:shadow-lg
+
+        transition-all
+      "
+    >
+
+      <h2
+        className="
+          text-xl
+          font-bold
+
+          text-slate-900
+          dark:text-white
+        "
+      >
         {document.filename}
       </h2>
 
-      <div className="mt-3">
-        <p>Type: {document.filetype}</p>
-        <p>Owner: {document.owner_id}</p>
+      <div
+        className="
+          mt-4
+          space-y-2
+
+          text-slate-600
+          dark:text-slate-300
+        "
+      >
+        <p>
+          <span className="font-semibold">
+            Type:
+          </span>{" "}
+          {document.filetype}
+        </p>
+
+        <p>
+          <span className="font-semibold">
+            Owner:
+          </span>{" "}
+          {document.owner_id}
+        </p>
       </div>
 
-      <div className="flex gap-3 mt-4 flex-wrap">
+
+      <div
+        className="
+          flex
+
+          flex-wrap
+
+          gap-3
+
+          mt-6
+        "
+      >
+
         <button
-          onClick={() => onOpen(document)}
-          className="bg-green-600 text-white px-3 py-2 rounded"
+          onClick={() =>
+            onOpen(document)
+          }
+
+          className="
+            px-4
+            py-2
+
+            rounded-xl
+
+            bg-green-600
+
+            hover:bg-green-700
+
+            text-white
+
+            transition
+          "
         >
           Open PDF
         </button>
 
+
         <button
-          onClick={() => onRename(document)}
-          className="bg-yellow-500 text-white px-3 py-2 rounded"
+          onClick={() =>
+            onRename(document)
+          }
+
+          className="
+            px-4
+            py-2
+
+            rounded-xl
+
+            bg-yellow-500
+
+            hover:bg-yellow-600
+
+            text-white
+
+            transition
+          "
         >
           Rename
         </button>
 
+
         <button
-          onClick={() => onReindex(document.id)}
-          className="bg-blue-600 text-white px-3 py-2 rounded"
+          onClick={() =>
+            onReindex(document.id)
+          }
+
+          className="
+            px-4
+            py-2
+
+            rounded-xl
+
+            bg-blue-600
+
+            hover:bg-blue-700
+
+            text-white
+
+            transition
+          "
         >
           Re-Index
         </button>
 
+
         <button
-          onClick={() => onDelete(document.id)}
-          className="bg-red-500 text-white px-3 py-2 rounded"
+          onClick={() =>
+            onDelete(document.id)
+          }
+
+          className="
+            px-4
+            py-2
+
+            rounded-xl
+
+            bg-red-500
+
+            hover:bg-red-600
+
+            text-white
+
+            transition
+          "
         >
           Delete
         </button>
+
       </div>
+
     </div>
   );
 }
